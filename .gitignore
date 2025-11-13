@@ -1,0 +1,20 @@
+# Foundry / Solidity
+lib/
+out/
+cache/
+node_modules/
+
+# Secrets & environment
+.env
+.env.local
+*.private
+*.key
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
