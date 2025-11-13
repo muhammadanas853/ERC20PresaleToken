@@ -1,0 +1,54 @@
+name: Foundry CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history helps with forge install
+
+      - name: Setup Foundry
+        uses: foundry-rs/setup-foundry@v1
+        with:
+          version: latest
+
+      - name: Mark workspace safe for git (fixes permission issues)
+        run: |
+          git config --global --add safe.directory /github/workspace
+          git status --porcelain || true
+
+      - name: Restore lib cache
+        uses: actions/cache@v4
+        with:
+          path: lib
+          key: ${{ runner.os }}-foundry-lib-${{ hashFiles('foundry.toml', 'script/**', 'src/**') }}
+          restore-keys: |
+            ${{ runner.os }}-foundry-lib-
+
+      - name: Install dependencies (forge install) with retry
+        run: |
+          set -e
+          for i in 1 2 3; do
+            forge install && break || (echo "forge install failed, retry $i/3"; sleep 2)
+          done
+
+      - name: Build
+        run: forge build
+
+      - name: Run tests
+        run: forge test -vv
+
+      - name: Upload test results (optional)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: foundry-test-logs
+          path: out/
