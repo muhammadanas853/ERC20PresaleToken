@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PresaleToken is ERC20, Ownable {
     bool public saleActive = false;
     uint256 public tokenPrice = 0.0001 ether; // 1 token = 0.0001 ETH
-    uint256 public maxCap = 10 ether;         // Max ETH allowed in presale
+    uint256 public maxCap = 10 ether; // Max ETH allowed in presale
     uint256 public totalRaised;
 
-    constructor()
-        ERC20("AnasToken", "ANAS")
-        Ownable(msg.sender)
-    {
+    constructor() ERC20("AnasToken", "ANAS") Ownable(msg.sender) {
         _mint(address(this), 1_000_000 * 10 ** decimals());
     }
 
